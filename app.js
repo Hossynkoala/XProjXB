@@ -18,7 +18,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/feeds',Feeds.router);
-app.use('/rsss',RSSs.router);
+app.use('/feed',Feeds.router);
+app.use('/rss',RSSs.router);
 
 module.exports = app;

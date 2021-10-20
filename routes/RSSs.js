@@ -10,7 +10,7 @@ router.get('/', async function (req, res, next) {
     res.send(Result).status(200);
 });
 
-router.post('/updatersss', async function (req, res, next) {
+router.post('/updaterss', async function (req, res, next) {
 
     const result = await DB.updatersss(req.body.Data);
 
