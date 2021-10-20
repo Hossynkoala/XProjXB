@@ -19,7 +19,7 @@ async function RecieveRSS() {
 
     const Con = await (await client.connect()).db("fundamental").collection('Feeds').aggregate(
         [
-            {$project: {URL: 1, _id: 0, RSSs: 1}},
+            {$project: {URL: 1, _id: 0, RSS: 1}},
             {$unwind: {path: '$RSS'}}
         ]
     ).toArray();
