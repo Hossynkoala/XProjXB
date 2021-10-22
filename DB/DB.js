@@ -104,10 +104,27 @@ async function receiveDashboardData() {
 }
 
 
+async function receivenews() {
+
+    const datas = await (await client.connect()).db("fundamental").collection('datas').aggregate(
+        [
+            {$project: {_id: 0}},
+            {$skip:0},
+            {$limit:100}
+        ]
+    ).toArray();
+
+    return datas;
+}
+
+
+
+
 module.exports = {
     RecieveFeeds,
     RecieveRSS,
     updatersss,
     addFeed,
-    receiveDashboardData
+    receiveDashboardData,
+    receivenews
 };

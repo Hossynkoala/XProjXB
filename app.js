@@ -8,6 +8,7 @@ var usersRouter = require('./routes/users');
 var Feeds = require('./routes/Feeds');
 var RSSs = require('./routes/RSSs');
 var dashboard = require('./routes/dashboard')
+var news = require('./routes/news')
 
 var app = express();
 
@@ -22,6 +23,6 @@ app.use('/users', usersRouter);
 app.use('/feed', Feeds.router);
 app.use('/rss', RSSs.router);
 app.use('/dashboard', dashboard.router);
-
+app.use('/news', news.router);
 
 module.exports = app;
