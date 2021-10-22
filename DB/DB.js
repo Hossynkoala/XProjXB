@@ -63,9 +63,51 @@ async function addFeed(data) {
 }
 
 
+//#todo
+//add news
+async function receiveDashboardData() {
+
+    const resultData = {
+        rss: 0,
+        data: 0,
+        tag: 0,
+        news: 0
+    }
+
+    const countRSS = await (await client.connect()).db("fundamental").collection('Feeds').aggregate(
+        [
+            {$count: 'URL'},
+        ]
+    ).toArray();
+
+    const countData = await (await client.connect()).db("fundamental").collection('Feeds').aggregate(
+        [
+            {$unwind: {path: '$RSS'}},
+            {$count: 'RSS'},
+        ]
+    ).toArray();
+
+    const countTag = await (await client.connect()).db("fundamental").collection('Feeds').aggregate(
+        [
+            {$unwind: {path: '$Tags'}},
+            {$count: 'Tags'},
+        ]
+    ).toArray();
+
+
+    resultData.rss = countRSS[0].URL;
+    resultData.data = countData[0].RSS;
+    resultData.tag = countTag[0].Tags;
+
+    return resultData;
+
+}
+
+
 module.exports = {
     RecieveFeeds,
     RecieveRSS,
     updatersss,
-    addFeed
+    addFeed,
+    receiveDashboardData
 };
