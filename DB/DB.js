@@ -30,7 +30,6 @@ async function receiveRSS() {
 async function updateRss(RSS) {
 
     let config = {
-        isDeleted: false,
         method: 'get',
         url: RSS,
         headers: {}
@@ -46,6 +45,7 @@ async function updateRss(RSS) {
             const cl = await client.connect();
 
             result1.rss.channel.item.forEach(feed => {
+                feed['isDelete'] = false;
                 cl.db('fundamental').collection('data').replaceOne(feed, feed, {upsert: true})
             });
 
