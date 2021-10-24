@@ -1,14 +1,22 @@
-var express = require('express');
-var router = express.Router();
-var DB = require('../DB/DB');
+const express = require('express');
+const router = express.Router();
+const DB = require('../DB/DB');
 
 
 router.get('/', async function (req, res, next) {
 
-    const Result = await DB.receivenews();
+    const Result = await DB.receiveNews();
 
     res.send(Result);
 });
 
+router.delete('/delete', async function (req, res) {
+
+
+    const Result = await DB.deleteNews();
+
+    res.send('catch');
+
+})
 
 module.exports = {router};

@@ -6,7 +6,7 @@ const uri = "mongodb+srv://hossynkoala:85245685hHH!@xprojx.edi7r.mongodb.net/XPr
 const client = new MongoClient(uri, {useNewUrlParser: true, useUnifiedTopology: true});
 
 
-async function RecieveFeeds() {
+async function receiveFeeds() {
 
     const Con = await (await client.connect()).db("fundamental").collection("Feeds").find({}).toArray();
 
@@ -15,7 +15,7 @@ async function RecieveFeeds() {
 }
 
 
-async function RecieveRSS() {
+async function receiveRSS() {
 
     const Con = await (await client.connect()).db("fundamental").collection('Feeds').aggregate(
         [
@@ -27,9 +27,10 @@ async function RecieveRSS() {
 }
 
 
-async function updatersss(RSS) {
+async function updateRss(RSS) {
 
     let config = {
+        isDeleted: false,
         method: 'get',
         url: RSS,
         headers: {}
@@ -45,7 +46,7 @@ async function updatersss(RSS) {
             const cl = await client.connect();
 
             result1.rss.channel.item.forEach(feed => {
-                cl.db('fundamental').collection('datas').replaceOne(feed, feed, {upsert: true})
+                cl.db('fundamental').collection('data').replaceOne(feed, feed, {upsert: true})
             });
 
 
@@ -104,13 +105,13 @@ async function receiveDashboardData() {
 }
 
 
-async function receivenews() {
+async function receiveNews() {
 
-    const datas = await (await client.connect()).db("fundamental").collection('datas').aggregate(
+    const datas = await (await client.connect()).db("fundamental").collection('data').aggregate(
         [
             {$project: {_id: 0}},
-            {$skip:0},
-            {$limit:100}
+            {$skip: 0},
+            {$limit: 100}
         ]
     ).toArray();
 
@@ -118,13 +119,20 @@ async function receivenews() {
 }
 
 
+async function deleteNews(_id) {
+
+    const datas = await (await client.connect()).db("fundamental").collection('data').updateOne({_id: _id}, {isDeleted: true})
+
+    return datas;
+}
 
 
 module.exports = {
-    RecieveFeeds,
-    RecieveRSS,
-    updatersss,
+    receiveFeeds,
+    receiveRSS,
+    updateRss,
     addFeed,
     receiveDashboardData,
-    receivenews
+    receiveNews,
+    deleteNews
 };

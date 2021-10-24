@@ -1,18 +1,18 @@
-var express = require('express');
-var router = express.Router();
-var DB = require('../DB/DB');
+const express = require('express');
+const router = express.Router();
+const DB = require('../DB/DB');
 
 
 router.get('/', async function (req, res, next) {
 
-    const Result = await DB.RecieveRSS();
+    const Result = await DB.receiveRSS();
 
     res.send(Result).status(200);
 });
 
 router.post('/updaterss', async function (req, res, next) {
 
-    const result = await DB.updatersss(req.body.Data);
+    const result = await DB.updateRss(req.body.Data);
 
     res.send(result).status(200);
 });

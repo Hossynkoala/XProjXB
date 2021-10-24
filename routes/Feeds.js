@@ -4,7 +4,7 @@ var DB = require('../DB/DB');
 
 
 router.get('/', async function (req, res, next) {
-    const Result = await DB.RecieveFeeds();
+    const Result = await DB.receiveFeeds();
 
     res.send(Result);
 });
