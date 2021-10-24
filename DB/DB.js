@@ -77,7 +77,6 @@ async function receiveDashboardData() {
 
     const countRSS = await (await client.connect()).db("fundamental").collection('Feeds').aggregate(
         [
-            {$match:{isDelete:false}},
             {$count: 'URL'},
         ]
     ).toArray();
@@ -110,6 +109,7 @@ async function receiveNews() {
 
     const datas = await (await client.connect()).db("fundamental").collection('news').aggregate(
         [
+            {$match:{isDelete:false}},
             {$skip: 0},
             {$limit: 100}
         ]
