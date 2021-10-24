@@ -46,7 +46,7 @@ async function updateRss(RSS) {
 
             result1.rss.channel.item.forEach(feed => {
                 feed['isDelete'] = false;
-                cl.db('fundamental').collection('data').replaceOne(feed, feed, {upsert: true})
+                cl.db('fundamental').collection('news').replaceOne(feed, feed, {upsert: true})
             });
 
 
@@ -77,6 +77,7 @@ async function receiveDashboardData() {
 
     const countRSS = await (await client.connect()).db("fundamental").collection('Feeds').aggregate(
         [
+            {$match:{isDelete:false}},
             {$count: 'URL'},
         ]
     ).toArray();
@@ -107,9 +108,8 @@ async function receiveDashboardData() {
 
 async function receiveNews() {
 
-    const datas = await (await client.connect()).db("fundamental").collection('data').aggregate(
+    const datas = await (await client.connect()).db("fundamental").collection('news').aggregate(
         [
-            {$project: {_id: 0}},
             {$skip: 0},
             {$limit: 100}
         ]
@@ -121,7 +121,7 @@ async function receiveNews() {
 
 async function deleteNews(_id) {
 
-    const datas = await (await client.connect()).db("fundamental").collection('data').updateOne({_id: _id}, {isDeleted: true})
+    const datas = await (await client.connect()).db("fundamental").collection('news').updateOne({_id: _id}, {isDeleted: true})
 
     return datas;
 }
