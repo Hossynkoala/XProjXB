@@ -99,9 +99,13 @@ async function receiveDashboardData() {
     ).toArray();
 
 
+    const countNews = await (await client.connect()).db("fundamental").collection('news').countDocuments()
+
+
     resultData.rss = countRSS[0].URL;
     resultData.data = countData[0].RSS;
     resultData.tag = countTag[0].Tags;
+    resultData.news = countNews;
 
     return resultData;
 
