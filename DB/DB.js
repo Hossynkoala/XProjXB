@@ -1,7 +1,8 @@
-const {MongoClient} = require('mongodb');
+const {MongoClient, ObjectId} = require('mongodb');
 const axios = require("axios");
 var convert = require('xml-js');
 
+const CronJob = require('cron').CronJob;
 const uri = "mongodb+srv://hossynkoala:85245685hHH!@xprojx.edi7r.mongodb.net/XProjX?retryWrites=true&w=majority";
 const client = new MongoClient(uri, {useNewUrlParser: true, useUnifiedTopology: true});
 
@@ -16,7 +17,6 @@ async function receiveFeeds() {
 
 
 async function receiveRSS() {
-
     const Con = await (await client.connect()).db("fundamental").collection('Feeds').aggregate(
         [
             {$project: {URL: 1, _id: 0, RSS: 1}},
@@ -35,25 +35,28 @@ async function updateRss(RSS) {
         headers: {}
     };
 
-    axios(config)
-        .then(async (response) => {
 
-            var xml = response.data;
+    const rawXML = await axios(config);
 
-            var result1 = JSON.parse(convert.xml2json(xml, {compact: true, spaces: 4}));
+    const xml = rawXML.data;
 
-            const cl = await client.connect();
-
-            result1.rss.channel.item.forEach(feed => {
-                feed['isDelete'] = false;
-                cl.db('fundamental').collection('news').replaceOne(feed, feed, {upsert: true})
-            });
+    const result = JSON.parse(convert.xml2json(xml, {compact: true, spaces: 4}));
 
 
-            return result1.rss.channel.item
+    for (let itemElement of result.rss.channel.item) {
 
-        })
+        const cl = await client.connect();
+
+        itemElement['isDelete'] = false;
+        await cl.db('fundamental').collection('news').replaceOne(itemElement, itemElement, {upsert: true})
+
+    }
+
+
+    return result.rss.channel.item
+
 }
+
 
 async function addFeed(data) {
 
@@ -121,9 +124,11 @@ async function receiveNews() {
 
 async function deleteNews(_id) {
 
-    const datas = await (await client.connect()).db("fundamental").collection('news').updateOne({_id: _id}, {isDeleted: true})
+    const newValues = {$set: {isDelete: true}};
+    const datas = await client.connect()
+    await datas.db("fundamental").collection('news').updateOne({_id: new ObjectId(_id)}, newValues)
 
-    return datas;
+    return 'done';
 }
 
 
@@ -138,21 +143,44 @@ module.exports = {
 };
 
 
-const CronJob = require('cron').CronJob;
-
-var job = new CronJob('* * * * * *', async function () {
+const job = new CronJob('1 * * * * *', async function () {
 
     const conn = await client.connect();
-    const Arraydoc = await conn.db('fundamental').collection('Feeds').find({}).toArray();
+    const ArrayDoc = await conn.db('fundamental').collection('Feeds').find({}).toArray();
 
-    for (let RSS of Arraydoc) {
+    for (let RSS of ArrayDoc) {
 
         for (let rss of RSS.RSS) {
-            await updateRss(RSS.URL + '/' + rss)
+
+            let config = {
+                method: 'get',
+                url: RSS.URL + '/' + rss,
+                headers: {}
+            };
+
+
+            const rawXML = await axios(config);
+
+            const xml = rawXML.data;
+
+            const result = JSON.parse(convert.xml2json(xml, {compact: true, spaces: 4}));
+
+
+            for (let itemElement of result.rss.channel.item) {
+
+                const cl = await client.connect();
+
+                itemElement['isDelete'] = false;
+                await cl.db('fundamental').collection('news').replaceOne(itemElement, itemElement, {upsert: true})
+
+            }
+
+
         }
 
     }
 
+
 }, null, true, 'America/Los_Angeles');
 
-job.start();
+job .start()

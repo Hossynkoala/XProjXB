@@ -12,10 +12,9 @@ router.get('/', async function (req, res, next) {
 
 router.delete('/delete', async function (req, res) {
 
+    const Result = await DB.deleteNews(req.body.Data);
 
-    const Result = await DB.deleteNews();
-
-    res.send('catch');
+    res.send(Result);
 
 })
 
