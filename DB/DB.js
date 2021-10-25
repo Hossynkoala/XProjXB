@@ -109,7 +109,7 @@ async function receiveNews() {
 
     const datas = await (await client.connect()).db("fundamental").collection('news').aggregate(
         [
-            {$match:{isDelete:false}},
+            {$match: {isDelete: false}},
             {$skip: 0},
             {$limit: 100}
         ]
@@ -136,3 +136,23 @@ module.exports = {
     receiveNews,
     deleteNews
 };
+
+
+const CronJob = require('cron').CronJob;
+
+var job = new CronJob('* * * * * *', async function () {
+
+    const conn = await client.connect();
+    const Arraydoc = await conn.db('fundamental').collection('Feeds').find({}).toArray();
+
+    for (let RSS of Arraydoc) {
+
+        for (let rss of RSS.RSS) {
+            await updateRss(RSS.URL + '/' + rss)
+        }
+
+    }
+
+}, null, true, 'America/Los_Angeles');
+
+job.start();

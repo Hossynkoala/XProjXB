@@ -35,8 +35,3 @@ module.exports = app;
 
 
 
-const uri = "mongodb+srv://hossynkoala:85245685hHH!@xprojx.edi7r.mongodb.net/XProjX?retryWrites=true&w=majority";
-const client = new MongoClient(uri, {useNewUrlParser: true, useUnifiedTopology: true});
-
-
-
