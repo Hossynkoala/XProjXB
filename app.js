@@ -11,7 +11,6 @@ var dashboard = require('./routes/dashboard')
 var news = require('./routes/news')
 const {MongoClient} = require("mongodb");
 
-var CronJob = require('cron').CronJob;
 
 var app = express();
 
@@ -41,9 +40,3 @@ const client = new MongoClient(uri, {useNewUrlParser: true, useUnifiedTopology: 
 
 
 
-var job = new CronJob('* * * * * *',async function() {
-
-  await (await client.connect()).db('fundamental').collection('data').insertOne({})
-
-}, null, true, 'America/Los_Angeles');
-job.start();
