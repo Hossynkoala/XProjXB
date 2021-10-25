@@ -122,11 +122,15 @@ async function receiveNews() {
 }
 
 
-async function deleteNews(_id) {
+async function deleteNews(ids) {
 
-    const newValues = {$set: {isDelete: true}};
-    const datas = await client.connect()
-    await datas.db("fundamental").collection('news').updateOne({_id: new ObjectId(_id)}, newValues)
+
+    for (const _id of ids) {
+        const newValues = {$set: {isDelete: true}};
+        const data = await client.connect()
+        await data.db("fundamental").collection('news').updateOne({_id: new ObjectId(_id)}, newValues)
+    }
+
 
     return 'done';
 }
@@ -183,4 +187,4 @@ const job = new CronJob('1 * * * * *', async function () {
 
 }, null, true, 'America/Los_Angeles');
 
-job .start()
+job.start()
