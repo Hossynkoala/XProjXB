@@ -5,9 +5,9 @@ const DB = require('../DB/DB');
 
 router.get('/', async function (req, res, next) {
 
-  // const Result = await DB.receiveNews(req.body.data);
+    const Result = await DB.receiveNews(req.body.Data);
 
-    res.send(req.body.data);
+    res.send(Result);
 });
 
 router.delete('/delete', async function (req, res) {
