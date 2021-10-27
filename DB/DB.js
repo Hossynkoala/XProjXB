@@ -112,13 +112,18 @@ async function receiveDashboardData() {
 }
 
 
-async function receiveNews() {
+async function receiveNews(Filter) {
 
+    const filter = {
+        showDelete: Filter.showDelete, //show delete 0|1
+        data: Filter.data, //Data
+        skip: Filter.skip //skip
+    }
     const datas = await (await client.connect()).db("fundamental").collection('news').aggregate(
         [
-            {$match: {isDelete: false}},
-            {$skip: 0},
-            {$limit: 100}
+            {$match: {isDelete: filter.showDelete}},
+            {$skip: filter.skip},
+            {$limit: filter.data}
         ]
     ).toArray();
 
@@ -127,7 +132,6 @@ async function receiveNews() {
 
 
 async function deleteNews(ids) {
-
 
     for (const _id of ids) {
         const newValues = {$set: {isDelete: true}};
