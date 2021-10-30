@@ -48,6 +48,7 @@ async function updateRss(RSS) {
         const cl = await client.connect();
 
         itemElement['isDelete'] = false;
+        itemElement['creationTime'] = Date.now();
         await cl.db('fundamental').collection('news').replaceOne(itemElement, itemElement, {upsert: true})
 
     }
@@ -183,6 +184,7 @@ const job = new CronJob('1 * * * * *', async function () {
                 const cl = await client.connect();
 
                 itemElement['isDelete'] = false;
+                itemElement['creationTime'] = Date.now();
                 await cl.db('fundamental').collection('news').replaceOne(itemElement, itemElement, {upsert: true})
 
             }
