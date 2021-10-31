@@ -116,11 +116,12 @@ async function receiveNews(Filter) {
     const filter = {
         showDelete: Filter.showDelete, //show delete 0|1
         data: Filter.data, //Data
-        skip: Filter.skip //skip
+        skip: Filter.skip, //skip,
+        showApprove:Filter.showApprove
     }
     const datas = await (await client.connect()).db("fundamental").collection('news').aggregate(
         [
-            {$match: {isDelete: filter.showDelete}},
+            {$match: {isDelete: filter.showDelete,isApprove:filter.showApprove}},
             {$skip: filter.skip},
             {$limit: filter.data}
         ]
