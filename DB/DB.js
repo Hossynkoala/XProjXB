@@ -48,7 +48,7 @@ async function updateRss(RSS) {
         const cl = await client.connect();
 
         itemElement['isDelete'] = false;
-        itemElement['isApprove']=false;
+        itemElement['isApprove'] = false;
         await cl.db('fundamental').collection('news').replaceOne(itemElement, itemElement, {upsert: true})
 
     }
@@ -66,7 +66,6 @@ async function addFeed(data) {
     return con;
 
 }
-
 
 
 async function receiveDashboardData() {
@@ -144,6 +143,18 @@ async function deleteNews(ids) {
 }
 
 
+async function approveNews(ids) {
+
+    for (const _id of ids) {
+        const newValues = {$set: {isDelete: false, isApprove: true}};
+        const data = await client.connect()
+        await data.db("fundamental").collection('news').updateOne({_id: new ObjectId(_id)}, newValues)
+    }
+
+
+    return 'done';
+}
+
 module.exports = {
     receiveFeeds,
     receiveRSS,
@@ -151,7 +162,8 @@ module.exports = {
     addFeed,
     receiveDashboardData,
     receiveNews,
-    deleteNews
+    deleteNews,
+    approveNews
 };
 
 
@@ -183,7 +195,7 @@ const job = new CronJob('1 * * * * *', async function () {
                 const cl = await client.connect();
 
                 itemElement['isDelete'] = false;
-                itemElement['isApprove']=false;
+                itemElement['isApprove'] = false;
                 await cl.db('fundamental').collection('news').replaceOne(itemElement, itemElement, {upsert: true})
 
             }
