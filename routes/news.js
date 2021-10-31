@@ -18,7 +18,7 @@ router.delete('/delete', async function (req, res) {
 
 })
 
-router.delete('/approve', async function (req, res) {
+router.post('/approve', async function (req, res) {
 
     const Result = await DB.approveNews(req.body.Data);
 
