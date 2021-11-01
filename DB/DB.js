@@ -1,6 +1,7 @@
-const {MongoClient, ObjectId} = require('mongodb');
+const {MongoClient, ObjectId, Timestamp} = require('mongodb');
 const axios = require("axios");
 var convert = require('xml-js');
+const {BSONType} = require("mongodb/mongodb.ts34");
 
 const CronJob = require('cron').CronJob;
 const uri = "mongodb+srv://hossynkoala:85245685hHH!@xprojx.edi7r.mongodb.net/XProjX?retryWrites=true&w=majority";
@@ -49,14 +50,13 @@ async function updateRss(RSS) {
     const timeParser = `${TimeNow.getFullYear()}/${TimeNow.getMonth()}/${TimeNow.getDay()} `;
 
     for (let itemElement of result.rss.channel.item) {
-
         const cl = await client.connect();
 
         itemElement['isDelete'] = false;
         itemElement['isApprove'] = false;
-        itemElement['creationTime'] = Date.parse(timeParser)
-        await cl.db('fundamental').collection('news').replaceOne(itemElement, itemElement, {upsert: true})
+        itemElement['creationTime'] = timeParser.toISOString()
 
+        await cl.db('fundamental').collection('news').replaceOne(itemElement, itemElement, {upsert: true})
     }
 
 
