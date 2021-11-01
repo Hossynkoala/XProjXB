@@ -35,6 +35,7 @@ async function updateRss(RSS) {
         headers: {}
     };
 
+    //Creat raw RSS
 
     const rawXML = await axios(config);
 
@@ -43,12 +44,17 @@ async function updateRss(RSS) {
     const result = JSON.parse(convert.xml2json(xml, {compact: true, spaces: 4}));
 
 
+//create time
+    const TimeNow = new Date();
+    const timeParser = `${TimeNow.getFullYear()}/${TimeNow.getMonth()}/${TimeNow.getDay()} `;
+
     for (let itemElement of result.rss.channel.item) {
 
         const cl = await client.connect();
 
         itemElement['isDelete'] = false;
         itemElement['isApprove'] = false;
+        itemElement['creationTime'] = Date.parse(timeParser)
         await cl.db('fundamental').collection('news').replaceOne(itemElement, itemElement, {upsert: true})
 
     }
@@ -117,11 +123,11 @@ async function receiveNews(Filter) {
         showDelete: Filter.showDelete, //show delete 0|1
         data: Filter.data, //Data
         skip: Filter.skip, //skip,
-        showApprove:Filter.showApprove
+        showApprove: Filter.showApprove
     }
     const datas = await (await client.connect()).db("fundamental").collection('news').aggregate(
         [
-            {$match: {isDelete: filter.showDelete,isApprove:filter.showApprove}},
+            {$match: {isDelete: filter.showDelete, isApprove: filter.showApprove}},
             {$skip: filter.skip},
             {$limit: filter.data}
         ]
@@ -183,13 +189,16 @@ const job = new CronJob('1 * * * * *', async function () {
                 headers: {}
             };
 
-
+//create raw rss
             const rawXML = await axios(config);
 
             const xml = rawXML.data;
 
             const result = JSON.parse(convert.xml2json(xml, {compact: true, spaces: 4}));
 
+//create time
+            const TimeNow = new Date();
+            const timeParser = `${TimeNow.getFullYear()}/${TimeNow.getMonth()}/${TimeNow.getDay()} `;
 
             for (let itemElement of result.rss.channel.item) {
 
@@ -197,6 +206,8 @@ const job = new CronJob('1 * * * * *', async function () {
 
                 itemElement['isDelete'] = false;
                 itemElement['isApprove'] = false;
+                itemElement['creationTime'] = Date.parse(timeParser)
+
                 await cl.db('fundamental').collection('news').replaceOne(itemElement, itemElement, {upsert: true})
 
             }
@@ -208,5 +219,6 @@ const job = new CronJob('1 * * * * *', async function () {
 
 
 }, null, true, 'America/Los_Angeles');
+
 
 job.start()
