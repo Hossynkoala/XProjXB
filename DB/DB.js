@@ -54,7 +54,7 @@ async function updateRss(RSS) {
 
         itemElement['isDelete'] = false;
         itemElement['isApprove'] = false;
-        itemElement['creationTime'] = timeParser.toISOString()
+        itemElement['creationTime'] = Date.parse(timeParser)
 
         await cl.db('fundamental').collection('news').replaceOne(itemElement, itemElement, {upsert: true})
     }
